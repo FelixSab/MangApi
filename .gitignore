@@ -1,0 +1,36 @@
+# Visual Studio files
+.vs/
+*.user
+*.suo
+*.cache
+*.dll.refresh
+*.log
+*.pdb
+*.ilk
+*.exe
+*.obj
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+build/
+[Bb]in/
+[Oo]bj/
+
+# NuGet packages
+**/packages/
+*.nupkg
+nuget.exe
+*.tmp
+*.dat
+*.log
+
+# MSTest test Results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
+# ASP.NET Core
+*.swp
+*~
+.DS_Store
