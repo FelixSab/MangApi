@@ -1,11 +1,7 @@
 ﻿using DB.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Collections.Immutable;
 
 namespace DB.Commands.Handlers;
 
@@ -63,7 +59,7 @@ internal class UpsertManganatoMangasHandler : IRequestHandler<UpsertManganatoMan
         {
             var dbManganatoIds = _context.Chapters
                 .Where(c => c.MangaID == manga.ID && c.ManganatoChapter != null)
-                .Select(c => c.ManganatoChapter!.ManganatoID);
+                .Select(c => c.ManganatoChapter!.ManganatoID).ToImmutableHashSet();
 
             var chaptersToUpdate = chapters.Where(c => !dbManganatoIds.Contains(c.Key));
 
