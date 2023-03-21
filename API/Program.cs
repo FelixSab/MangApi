@@ -1,13 +1,13 @@
 using API.Cron;
-using API.Cron.Jobs;
 using Crawler;
 using DB;
 using Interface;
+using MediatR;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Quartz;
+
 
 var builder = WebApplication.CreateBuilder(args);
-
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddLogging(configure => configure.AddConsole());
@@ -16,6 +16,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddQuartzConfigured();
 builder.Services.AddMangapiContext();
 builder.Services.AddManganatoCrawler();
+builder.Services.AddMediator();
 
 var app = builder.Build();
 
@@ -28,28 +29,23 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/crawl-manganato", async ([FromServices] IManganatoCrawler crawler, [FromServices] IDbContext context, [FromQuery] int? pageEnd, [FromQuery] int? pageStart) =>
+app.MapGet("/crawl-manganato", async ([FromServices] IManganatoCrawler crawler, [FromServices] IMediator mediator, [FromQuery] int? pageEnd, [FromQuery] int? pageStart) =>
 {
     if (pageEnd is null)
     {
         var mangas = await crawler.CrawlRecentlyUpdatedMangas();
-        await context.UpsertManganatoMangas(mangas);
+        await mediator.UpsertManganatoMangas(mangas);
     }
     else
     {
         var mangas = await crawler.CrawlMangaPages(pageStart ?? 1, pageEnd ?? 1);
-        await context.UpsertManganatoMangas(mangas);
+        await mediator.UpsertManganatoMangas(mangas);
     }
 });
 
-app.MapGet("/get-mangas", ([FromServices] IDbContext context) =>
+app.MapGet("/get-mangas", ([FromServices] IMediator mediator) =>
 {
-    return context.GetMangaIDs();
+    return mediator.GetMangaIDs();
 }).WithOpenApi();
 
 app.Run();

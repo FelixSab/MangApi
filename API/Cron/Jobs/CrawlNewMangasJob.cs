@@ -1,6 +1,7 @@
 ﻿using API.Cron.Interfaces;
-using Crawler;
 using Interface;
+using DB;
+using MediatR;
 using Quartz;
 
 namespace API.Cron.Jobs;
@@ -21,9 +22,9 @@ internal class CrawlNewMangasJob : ICronJob
     public async Task Execute(IJobExecutionContext context)
     {
         var crawler = _serviceProvider.GetService<IManganatoCrawler>()!;
-        var dbContext = _serviceProvider.GetService<IDbContext>()!;
+        var mediator = _serviceProvider.GetService<IMediator>()!;
 
         var mangas = await crawler.CrawlRecentlyUpdatedMangas();
-        await dbContext.UpsertManganatoMangas(mangas);
+        await mediator.UpsertManganatoMangas(mangas);
     }
 }

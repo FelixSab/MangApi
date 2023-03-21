@@ -1,5 +1,4 @@
-﻿using Interface;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 namespace DB;
 
@@ -10,7 +9,7 @@ public static class Extensions
         using var context = new MangapiContext();
         context.Database.EnsureCreated();
 
-        services.AddDbContext<IDbContext, MangapiContext>();
+        services.AddDbContext<MangapiContext>();
         return services;
     }
 
